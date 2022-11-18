@@ -15,9 +15,9 @@ class QuickActionPluginInstance(LazyLoadPluginInstance):
 
 bot = QuickActionPluginInstance(
     name='快速响应模式',
-    version='1.0',
+    version='1.1',
     plugin_id='amiyabot-arknights-hsyhhssyy-quick-action',
-    plugin_type='official',
+    plugin_type='',
     description='让兔兔可以一次执行多个任务',
     document=f'{curr_dir}/README.md'
 )
@@ -50,7 +50,8 @@ async def _(data: Message):
 
     if user_module:
         #只有没有签过到才会触发一键三连
-         await data.send(Chain(data).text(user_module.main.sign_in(data, 1)['text']))
+        reply = await user_module.main.user_info(data)
+        await data.send(reply.text(user_module.main.sign_in(data, 1)['text']))
     else:
         log.info(f'未启用兔兔交互模块')
 
