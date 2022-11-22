@@ -15,7 +15,7 @@ class QuickActionPluginInstance(LazyLoadPluginInstance):
 
 bot = QuickActionPluginInstance(
     name='快速响应模式',
-    version='1.1',
+    version='1.2',
     plugin_id='amiyabot-arknights-hsyhhssyy-quick-action',
     plugin_type='',
     description='让兔兔可以一次执行多个任务',
