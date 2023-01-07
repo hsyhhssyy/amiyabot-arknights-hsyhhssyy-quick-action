@@ -3,6 +3,7 @@ import importlib
 import inspect
 
 from amiyabot.util import temp_sys_path
+from core.database.user import UserInfo, UserGachaInfo
 from core import log, Message, Chain, LazyLoadPluginInstance
 
 curr_dir = os.path.dirname(__file__)
@@ -15,7 +16,7 @@ class QuickActionPluginInstance(LazyLoadPluginInstance):
 
 bot = QuickActionPluginInstance(
     name='快速响应模式',
-    version='1.2',
+    version='1.3',
     plugin_id='amiyabot-arknights-hsyhhssyy-quick-action',
     plugin_type='',
     description='让兔兔可以一次执行多个任务',
@@ -60,8 +61,23 @@ async def _(data: Message):
     gacha_module = import_plugin_lib(f'amiyabot-arknights-gacha')
 
     if gacha_module:
+        user_info: UserInfo = UserInfo.get_user(data.user_id)
         gc = gacha_module.gachaBuilder.GachaBuilder(data)
-        await data.send(gc.detailed_mode(10, 10, 0, ten_times=True))
+        coupon = gc.user_gacha.coupon
+        skip_coupon = 1
+        coupon_need = 10
+        point_need = 0
+
+        if coupon<10 :
+            coupon_need = coupon
+            point_need = (10 - coupon) * 600
+
+            if user_info.jade_point < (10 - coupon) * 600:
+                await data.send(Chain(data).text(f'博士，您的寻访资源不够哦~\n寻访凭证剩余{coupon}张\n合成玉剩余{user_info.jade_point}'))
+                skip_coupon = 2
+        
+        if skip_coupon == 1:
+            await data.send(gc.detailed_mode(10, coupon_need, point_need, ten_times=True))
     else:
         log.info(f'未启用寻访模拟模块')
 
